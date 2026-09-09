@@ -1,0 +1,23 @@
+{
+  "Gender": "Gender",
+  "Age": "Age",
+  "Distance_to_School_km": "Distance (km)",
+  "Household_Income_Band": "Income Band",
+  "Fee_Payment_Status": "Fee Payment Status",
+  "Parental_Education_Level": "Parental Education",
+  "Parental_Involvement": "Parental Involvement",
+  "Attendance_Rate_Pct": "Attendance Rate (%)",
+  "Avg_Academic_Score_Pct": "Academic Score (%)",
+  "Failed_Subjects_Count": "Failed Subjects",
+  "Cognitive_Assessment_Score": "Cognitive Score",
+  "Learning_Pace": "Learning Pace",
+  "Study_Habit_Score": "Study Habit Score",
+  "Practical_Subject_Score": "Practical Score",
+  "PE_Participation": "PE Participation",
+  "Psychomotor_Dev_Score": "Psychomotor Score",
+  "Year_Group_JSS2": "Year Group: JSS2",
+  "Year_Group_JSS3": "Year Group: JSS3",
+  "Year_Group_SS1": "Year Group: SS1",
+  "Year_Group_SS2": "Year Group: SS2",
+  "Year_Group_SS3": "Year Group: SS3"
+}

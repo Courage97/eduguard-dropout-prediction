@@ -1,0 +1,22 @@
+,mean_abs_shap
+Fee Payment Status,1.7056187
+Income Band,1.5214418
+Academic Score (%),1.5143173
+Attendance Rate (%),1.377272
+Distance (km),1.2185729
+Failed Subjects,1.1626489
+Cognitive Score,0.84911454
+Parental Involvement,0.7755127
+Parental Education,0.7369384
+Learning Pace,0.7082723
+Study Habit Score,0.6630119
+Age,0.54480666
+Psychomotor Score,0.46857348
+PE Participation,0.38036174
+Practical Score,0.11070077
+Gender,0.09450291
+Year Group: JSS3,0.08427409
+Year Group: SS3,0.0622344
+Year Group: JSS2,0.044438727
+Year Group: SS2,0.04326426
+Year Group: SS1,0.03150336
