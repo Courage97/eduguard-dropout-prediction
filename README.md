@@ -17,7 +17,7 @@ Socioeconomic and Academic Datasets
 **Researcher:** Nzeako Jennifer Nkiruka | DU/C/247
 **Supervisor:** Mr Akinnifesi
 **Department:** Physical and Mathematical Science
-**Degree:** MSc Computer Science
+**Degree:** Computer Science
 
 ---
 

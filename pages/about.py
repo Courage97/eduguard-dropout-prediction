@@ -323,7 +323,7 @@ st.markdown("<div class='page-wrap'>", unsafe_allow_html=True)
 # PAGE HEADER (always visible — this is the page identity, not a slide)
 # ══════════════════════════════════════════════════════════════════════
 st.markdown("""
-<p class="page-eyebrow">MSc Research Project</p>
+<p class="page-eyebrow">Research Project</p>
 <h1 class="page-h1">About EduGuard</h1>
 <p class="page-sub">
   A click-through walkthrough of the research built for the viva defence.
@@ -512,7 +512,7 @@ def slide_identity():
     <div class="identity-card">
       <div class="identity-card-glow"></div>
       <div class="identity-card-glow-2"></div>
-      <div class="identity-badge">MSc Research — Computer Science</div>
+      <div class="identity-badge">Research — Computer Science</div>
       <h2 class="identity-title">
         A Dropout Risk Prediction and Intervention Recommendation System
         for Secondary School Students Using Ensemble Learning on
@@ -551,7 +551,7 @@ def slide_identity():
           <div class="identity-item-icon">📜</div>
           <div>
             <div class="identity-item-label">Degree</div>
-            <div class="identity-item-value">MSc Computer Science</div>
+            <div class="identity-item-value">Computer Science</div>
           </div>
         </div>
         <div class="identity-item">
@@ -843,7 +843,7 @@ def slide_synthetic():
         "Additionally, collecting data from minors in Nigerian secondary "
         "schools requires multi-stage ethics clearance, parental consent, "
         "and school administrative cooperation — a process that typically "
-        "exceeds a standard MSc project timeline."
+        "exceeds a standard project timeline."
         "</p></div>"
         "<div class='insight-box'>"
         "<p class='insight-title'>Precedent in published research</p>"
@@ -1135,7 +1135,7 @@ st.markdown("""
 <div class="edu-footer">
   EduGuard — Early Dropout Intelligence System &nbsp;·&nbsp;
   Nzeako Jennifer Nkiruka (DU/C/247) &nbsp;·&nbsp;
-  MSc Computer Science &nbsp;·&nbsp;
+  Computer Science &nbsp;·&nbsp;
   Built with Streamlit · XGBoost · SHAP
 </div>
 """, unsafe_allow_html=True)

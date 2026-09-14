@@ -686,7 +686,7 @@ st.markdown("""
   <div class="edu-footer-credit">
     EduGuard — Early Dropout Intelligence System &nbsp;·&nbsp;
     Nzeako Jennifer Nkiruka (DU/C/247) &nbsp;·&nbsp;
-    MSc Computer Science
+    Computer Science
   </div>
 </div>
 """, unsafe_allow_html=True)

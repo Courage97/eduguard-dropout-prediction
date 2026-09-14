@@ -318,7 +318,7 @@ st.markdown("""
     Full evaluation of all three trained models on the held-out test set
     of 2,000 students. Switch between tabs to explore ROC curves, confusion
     matrices, feature importance, and cross-validation everything needed
-    to defend the model selection at the MSc viva.
+    to defend the model selection at the viva.
   </p>
   <div class="context-badges">
     <div class="context-badge">🧪 3 models compared</div>

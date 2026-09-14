@@ -366,7 +366,7 @@ def navbar():
         </div>
         <div style="color:#AABBCC;font-size:11px;margin-top:2px;">
           Model: XGBoost &nbsp;|&nbsp; Dataset: 10,000 records &nbsp;|&nbsp;
-          MSc Computer Science
+          Computer Science
         </div>
       </div>
     </div>
@@ -378,7 +378,7 @@ def footer():
     <div class="footer">
       MnemoniQ Dropout Risk Prediction System &nbsp;|&nbsp;
       Nzeako Jennifer Nkiruka (DU/C/247) &nbsp;|&nbsp;
-      MSc Computer Science &nbsp;|&nbsp;
+      Computer Science &nbsp;|&nbsp;
       Built with Streamlit · XGBoost · SHAP
     </div>
     """, unsafe_allow_html=True)
