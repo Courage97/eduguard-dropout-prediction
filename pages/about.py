@@ -514,9 +514,8 @@ def slide_identity():
       <div class="identity-card-glow-2"></div>
       <div class="identity-badge">Research — Computer Science</div>
       <h2 class="identity-title">
-        A Dropout Risk Prediction and Intervention Recommendation System
-        for Secondary School Students Using Ensemble Learning on
-        Socioeconomic and Academic Datasets
+        Design and Implementation of a Machine Learning Model for
+        Predicting Drop-Out Risk in Public Secondary Schools
       </h2>
       <div class="identity-grid">
         <div class="identity-item">
