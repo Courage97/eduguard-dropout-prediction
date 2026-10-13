@@ -9,7 +9,7 @@ What this script does:
   2. Separates features from target variable
   3. Encodes all categorical variables
   4. Scales all continuous features
-  5. Splits into train / test sets (80/20 temporal split)
+  5. Splits into train / validation / test sets (80/10/10 stratified split)
   6. Applies SMOTE to balance the training set
   7. Saves all preprocessed artefacts to /data/ folder
   8. Prints a full preprocessing report
@@ -165,20 +165,32 @@ print(f"        Completed (0): {(y==0).sum():,} ({(y==0).mean()*100:.1f}%)")
 
 
 # ══════════════════════════════════════════════════════════════════════
-# 2.6  TRAIN / TEST SPLIT (80/20)
+# 2.6  TRAIN / VALIDATION / TEST SPLIT (80/10/10)
 # ══════════════════════════════════════════════════════════════════════
-print("\n[2.6] Splitting into train and test sets (80/20)...")
+print("\n[2.6] Splitting into train, validation and test sets (80/10/10)...")
 
-X_train, X_test, y_train, y_test = train_test_split(
+# Step 1: hold out 10% of the full dataset as the test set
+X_train_val, X_test, y_train_val, y_test = train_test_split(
     X, y,
-    test_size=0.20,
+    test_size=0.10,
     random_state=42,
     stratify=y
 )
 
-print(f"      Training set:  {X_train.shape[0]:,} rows "
+# Step 2: split the remaining 90% into 80% train / 10% validation
+# (10% of total = 0.1111 of the 90% remainder)
+X_train, X_val, y_train, y_val = train_test_split(
+    X_train_val, y_train_val,
+    test_size=0.1111,
+    random_state=42,
+    stratify=y_train_val
+)
+
+print(f"      Training set:   {X_train.shape[0]:,} rows "
       f"({y_train.mean()*100:.1f}% dropout)")
-print(f"      Test set:      {X_test.shape[0]:,} rows  "
+print(f"      Validation set: {X_val.shape[0]:,} rows  "
+      f"({y_val.mean()*100:.1f}% dropout)")
+print(f"      Test set:       {X_test.shape[0]:,} rows  "
       f"({y_test.mean()*100:.1f}% dropout)")
 
 
@@ -190,6 +202,7 @@ print("\n[2.7] Scaling continuous features...")
 scaler = StandardScaler()
 
 X_train_scaled = X_train.copy()
+X_val_scaled   = X_val.copy()
 X_test_scaled  = X_test.copy()
 
 continuous_cols_present = [
@@ -198,6 +211,9 @@ continuous_cols_present = [
 
 X_train_scaled[continuous_cols_present] = scaler.fit_transform(
     X_train[continuous_cols_present]
+)
+X_val_scaled[continuous_cols_present] = scaler.transform(
+    X_val[continuous_cols_present]
 )
 X_test_scaled[continuous_cols_present] = scaler.transform(
     X_test[continuous_cols_present]
@@ -235,24 +251,33 @@ print(f"        Total:         {len(y_train_balanced):,}")
 print("\n[2.9] Saving preprocessed artefacts...")
 
 X_train_df = pd.DataFrame(X_train_balanced, columns=feature_cols)
+X_val_df   = pd.DataFrame(X_val_scaled,     columns=feature_cols)
 X_test_df  = pd.DataFrame(X_test_scaled,    columns=feature_cols)
 
 X_train_df.to_csv("data/X_train.csv", index=False)
+X_val_df.to_csv(  "data/X_val.csv",   index=False)
 X_test_df.to_csv( "data/X_test.csv",  index=False)
 
 pd.Series(y_train_balanced, name="Dropout_Status").to_csv(
     "data/y_train.csv", index=False
 )
+pd.Series(y_val.values, name="Dropout_Status").to_csv(
+    "data/y_val.csv", index=False
+)
 pd.Series(y_test.values, name="Dropout_Status").to_csv(
     "data/y_test.csv", index=False
 )
 
+X_val.to_csv( "data/X_val_unscaled.csv",  index=False)
 X_test.to_csv("data/X_test_unscaled.csv", index=False)
 
 print("      data/X_train.csv         — balanced training features")
+print("      data/X_val.csv           — scaled validation features")
 print("      data/X_test.csv          — scaled test features")
 print("      data/y_train.csv         — training labels (SMOTE balanced)")
+print("      data/y_val.csv           — validation labels")
 print("      data/y_test.csv          — test labels")
+print("      data/X_val_unscaled.csv  — unscaled validation features for SHAP")
 print("      data/X_test_unscaled.csv — unscaled test features for SHAP")
 print("      data/scaler.pkl          — fitted StandardScaler")
 print("      data/encoding_maps.pkl   — categorical encoding mappings")
@@ -269,9 +294,14 @@ print(f"  Raw dataset:          10,000 rows x 19 columns")
 print(f"  After dropping ID:    10,000 rows x 18 columns")
 print(f"  Features after enc.:  {len(feature_cols)} features")
 print(f"  Missing values:       0")
-print(f"  Train set (raw):      {X_train.shape[0]:,} rows")
-print(f"  Test set:             {X_test.shape[0]:,} rows")
+print(f"  Split ratio:          80 / 10 / 10 (train / val / test, stratified)")
+print(f"  Train set (raw):      {X_train.shape[0]:,} rows  "
+      f"({y_train.mean()*100:.1f}% dropout)")
+print(f"  Validation set:       {X_val.shape[0]:,} rows  "
+      f"({y_val.mean()*100:.1f}% dropout)")
+print(f"  Test set:             {X_test.shape[0]:,} rows  "
+      f"({y_test.mean()*100:.1f}% dropout)")
 print(f"  Train set (SMOTE):    {len(X_train_balanced):,} rows (50/50 balanced)")
-print(f"  Test dropout rate:    {y_test.mean()*100:.1f}% (real-world distribution)")
+print(f"  Val/Test dropout:     real-world distribution (no SMOTE)")
 print(f"{'=' * 65}")
 print(f"\n  Step 2 complete. Run train.py next.\n")

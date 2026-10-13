@@ -340,9 +340,9 @@ meth_df = pd.DataFrame([
     ["Dataset size",          "10,000 synthetic student records"],
     ["Dataset calibration",   "UNESCO UIS Nigeria (2023), World Bank GHS-Panel, UCI Dropout Dataset (Realinho et al., 2022)"],
     ["Features",              "17 predictors across 5 domains — Demographic, Socioeconomic, Academic, Cognitive, Psychomotor"],
-    ["Preprocessing",         "Label/ordinal/one-hot encoding · StandardScaler · Stratified 80/20 split · SMOTE balancing"],
+    ["Preprocessing",         "Label/ordinal/one-hot encoding · StandardScaler · Stratified 80/10/10 split (train/validation/test) · SMOTE balancing"],
     ["Models trained",        "Logistic Regression (baseline), Random Forest (n=300), XGBoost (n=500, lr=0.05)"],
-    ["Validation",            "5-fold stratified cross-validation on training set · held-out test set of 2,000 students"],
+    ["Validation",            "5-fold stratified cross-validation on training set · dedicated validation set of 1,000 students for XGBoost early stopping · held-out test set of 1,000 students"],
     ["Selected model",        "XGBoost — highest AUC-ROC, lowest false positives, native SHAP TreeExplainer support"],
     ["Explainability",        "SHAP TreeExplainer — per-student feature attribution, waterfall charts"],
     ["Intervention framework","Ojo & Awonuga (2022) evidence-based Nigerian secondary school intervention taxonomy"],
@@ -577,8 +577,8 @@ def slide_stats():
         (s2, "17",     "Predictive features", BLUE2),
         (s3, "5",      "Feature domains",     PURPLE),
         (s4, "3",      "Models compared",     DARK),
-        (s5, "89.7%",  "XGBoost Recall",      RED),
-        (s6, "99.4%",  "AUC-ROC",            GREEN),
+        (s5, "90.7%",  "XGBoost Recall",      RED),
+        (s6, "98.6%",  "AUC-ROC",            GREEN),
     ]:
         col.markdown(
             f"<div class='stat-card'>"

@@ -5,13 +5,14 @@ Dropout Risk Prediction System
 Nzeako Jennifer Nkiruka | DU/C/247
 =======================================================================
 What this script does:
-  1.  Loads preprocessed training and test data
+  1.  Loads preprocessed training, validation and test data
   2.  Trains three models:
         - Logistic Regression  (baseline)
         - Random Forest        (primary ensemble)
-        - XGBoost              (expected best performer)
+        - XGBoost              (expected best performer, early stopping
+                                on the validation set)
   3.  Tunes each model using 5-fold cross-validation
-  4.  Evaluates all three on the held-out test set
+  4.  Evaluates all three on the validation and held-out test sets
   5.  Prints a full comparison report
   6.  Saves all three trained models to /model/ folder
 
@@ -27,6 +28,7 @@ import time
 import warnings
 warnings.filterwarnings("ignore")
 
+from sklearn.base          import clone
 from sklearn.linear_model  import LogisticRegression
 from sklearn.ensemble      import RandomForestClassifier
 from sklearn.model_selection import cross_val_score, StratifiedKFold
@@ -58,12 +60,18 @@ X_test  = pd.read_csv(f"{DATA_DIR}/X_test.csv")
 y_train = pd.read_csv(f"{DATA_DIR}/y_train.csv").squeeze()
 y_test  = pd.read_csv(f"{DATA_DIR}/y_test.csv").squeeze()
 
+# Validation set — already scaled in preprocess.py with the fitted scaler
+X_val_scaled = pd.read_csv(f"{DATA_DIR}/X_val.csv")
+y_val        = pd.read_csv(f"{DATA_DIR}/y_val.csv").squeeze()
+
 feature_cols = joblib.load(f"{DATA_DIR}/feature_columns.pkl")
 
-print(f"      Training set:  {X_train.shape[0]:,} rows x {X_train.shape[1]} features")
-print(f"      Test set:      {X_test.shape[0]:,} rows x {X_test.shape[1]} features")
-print(f"      Train dropout: {y_train.mean()*100:.1f}%  (SMOTE balanced)")
-print(f"      Test dropout:  {y_test.mean()*100:.1f}%   (real-world distribution)")
+print(f"      Training set:   {X_train.shape[0]:,} rows x {X_train.shape[1]} features")
+print(f"      Validation set: {X_val_scaled.shape[0]:,} rows x {X_val_scaled.shape[1]} features")
+print(f"      Test set:       {X_test.shape[0]:,} rows x {X_test.shape[1]} features")
+print(f"      Train dropout:  {y_train.mean()*100:.1f}%  (SMOTE balanced)")
+print(f"      Val dropout:    {y_val.mean()*100:.1f}%   (real-world distribution)")
+print(f"      Test dropout:   {y_test.mean()*100:.1f}%   (real-world distribution)")
 
 
 # ══════════════════════════════════════════════════════════════════════
@@ -103,6 +111,13 @@ def evaluate_on_test(model, X_test, y_test):
         "y_pred_prob": y_pred_prob,
     }
 
+def print_val_test_results(val, test):
+    """Print validation and test metrics side by side."""
+    print(f"\n      Validation vs Test Set Results:")
+    print(f"        {'metric':<12} {'val':>8}  {'test':>8}")
+    for metric in ["accuracy", "precision", "recall", "f1", "roc_auc"]:
+        print(f"        {metric:<12} {val[metric]:>8.4f}  {test[metric]:>8.4f}")
+
 results = {}   # stores all results for final comparison
 
 
@@ -132,20 +147,19 @@ print(f"      Training time: {elapsed:.2f}s")
 print("      Running 5-fold cross-validation...")
 lr_cv = cross_validate_model(lr_model, X_train, y_train, "Logistic Regression")
 
-print("      Evaluating on test set...")
+print("      Evaluating on validation and test sets...")
+lr_val  = evaluate_on_test(lr_model, X_val_scaled, y_val)
 lr_test = evaluate_on_test(lr_model, X_test, y_test)
 
 results["Logistic Regression"] = {
-    "model": lr_model, "cv": lr_cv, "test": lr_test
+    "model": lr_model, "cv": lr_cv, "val": lr_val, "test": lr_test
 }
 
 print(f"\n      Cross-Validation Results (mean ± std):")
 for metric, vals in lr_cv.items():
     print(f"        {metric:<12} {vals['mean']:.4f} ± {vals['std']:.4f}")
 
-print(f"\n      Test Set Results:")
-for metric in ["accuracy", "precision", "recall", "f1", "roc_auc"]:
-    print(f"        {metric:<12} {lr_test[metric]:.4f}")
+print_val_test_results(lr_val, lr_test)
 
 # Save model
 joblib.dump(lr_model, f"{MODEL_DIR}/logistic_regression.pkl")
@@ -184,20 +198,19 @@ print(f"      OOB Score:     {rf_model.oob_score_:.4f}  "
 print("      Running 5-fold cross-validation...")
 rf_cv = cross_validate_model(rf_model, X_train, y_train, "Random Forest")
 
-print("      Evaluating on test set...")
+print("      Evaluating on validation and test sets...")
+rf_val  = evaluate_on_test(rf_model, X_val_scaled, y_val)
 rf_test = evaluate_on_test(rf_model, X_test, y_test)
 
 results["Random Forest"] = {
-    "model": rf_model, "cv": rf_cv, "test": rf_test
+    "model": rf_model, "cv": rf_cv, "val": rf_val, "test": rf_test
 }
 
 print(f"\n      Cross-Validation Results (mean ± std):")
 for metric, vals in rf_cv.items():
     print(f"        {metric:<12} {vals['mean']:.4f} ± {vals['std']:.4f}")
 
-print(f"\n      Test Set Results:")
-for metric in ["accuracy", "precision", "recall", "f1", "roc_auc"]:
-    print(f"        {metric:<12} {rf_test[metric]:.4f}")
+print_val_test_results(rf_val, rf_test)
 
 # Feature importance — top 10
 importances = rf_model.feature_importances_
@@ -238,37 +251,47 @@ xgb_model = XGBClassifier(
     reg_lambda=1.0,             # L2 regularisation
     scale_pos_weight=1,         # SMOTE balanced — no need to adjust
     eval_metric="logloss",
+    early_stopping_rounds=50,   # stop if val logloss doesn't improve for 50 rounds
     use_label_encoder=False,
     random_state=42,
     n_jobs=-1,
     verbosity=0
 )
 
+# XGBoost >= 2.0 takes early_stopping_rounds in the constructor, not fit()
 xgb_model.fit(
     X_train, y_train,
-    eval_set=[(X_test, y_test)],
+    eval_set=[(X_val_scaled, y_val)],
     verbose=False
 )
 elapsed = time.time() - start
 print(f"      Training time: {elapsed:.2f}s")
+print(f"      Early stopping: best iteration {xgb_model.best_iteration} "
+      f"of {xgb_model.n_estimators} "
+      f"(val logloss {xgb_model.best_score:.4f})")
 
+# CV folds have no eval_set, so run CV on a copy with early stopping off,
+# fixed at the number of rounds early stopping selected
 print("      Running 5-fold cross-validation...")
-xgb_cv = cross_validate_model(xgb_model, X_train, y_train, "XGBoost")
+xgb_cv_model = clone(xgb_model).set_params(
+    n_estimators=xgb_model.best_iteration + 1,
+    early_stopping_rounds=None
+)
+xgb_cv = cross_validate_model(xgb_cv_model, X_train, y_train, "XGBoost")
 
-print("      Evaluating on test set...")
+print("      Evaluating on validation and test sets...")
+xgb_val  = evaluate_on_test(xgb_model, X_val_scaled, y_val)
 xgb_test = evaluate_on_test(xgb_model, X_test, y_test)
 
 results["XGBoost"] = {
-    "model": xgb_model, "cv": xgb_cv, "test": xgb_test
+    "model": xgb_model, "cv": xgb_cv, "val": xgb_val, "test": xgb_test
 }
 
 print(f"\n      Cross-Validation Results (mean ± std):")
 for metric, vals in xgb_cv.items():
     print(f"        {metric:<12} {vals['mean']:.4f} ± {vals['std']:.4f}")
 
-print(f"\n      Test Set Results:")
-for metric in ["accuracy", "precision", "recall", "f1", "roc_auc"]:
-    print(f"        {metric:<12} {xgb_test[metric]:.4f}")
+print_val_test_results(xgb_val, xgb_test)
 
 # Feature importance
 xgb_importance = pd.Series(
@@ -394,6 +417,8 @@ for model_name, res in results.items():
     row = {"Model": model_name}
     for metric in metrics_order:
         row[metric.capitalize()] = round(res["test"][metric], 4)
+    for metric in metrics_order:
+        row[f"Val_{metric.capitalize()}"] = round(res["val"][metric], 4)
     for metric, vals in res["cv"].items():
         row[f"CV_{metric}_mean"] = round(vals["mean"], 4)
         row[f"CV_{metric}_std"]  = round(vals["std"],  4)

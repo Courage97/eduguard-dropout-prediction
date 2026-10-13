@@ -309,8 +309,8 @@ st.markdown("""
       interventions to act on.
     </p>
     <div class="edu-chips">
-      <div class="edu-chip">🎯 89.7% Recall</div>
-      <div class="edu-chip">📊 99.4% AUC-ROC</div>
+      <div class="edu-chip">🎯 90.7% Recall</div>
+      <div class="edu-chip">📊 98.6% AUC-ROC</div>
       <div class="edu-chip">⚡ 10,000 Records</div>
       <div class="edu-chip">🏫 17 Predictors</div>
     </div>
@@ -402,13 +402,13 @@ st.markdown(f"""
   <div class="edu-divider"></div>
   <div class="edu-stat">
     <div class="edu-stat-icon" style="background:{RED}18;">🎯</div>
-    <div class="edu-stat-num" style="color:{RED};">89.7%</div>
+    <div class="edu-stat-num" style="color:{RED};">90.7%</div>
     <div class="edu-stat-label">Recall (XGBoost)</div>
   </div>
   <div class="edu-divider"></div>
   <div class="edu-stat">
     <div class="edu-stat-icon" style="background:{GREEN}18;">📈</div>
-    <div class="edu-stat-num" style="color:{GREEN};">99.4%</div>
+    <div class="edu-stat-num" style="color:{GREEN};">98.6%</div>
     <div class="edu-stat-label">AUC-ROC</div>
   </div>
   <div class="edu-divider"></div>

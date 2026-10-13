@@ -316,13 +316,13 @@ st.markdown("""
   <h1 class="page-h1">Model Performance Dashboard</h1>
   <p class="page-sub">
     Full evaluation of all three trained models on the held-out test set
-    of 2,000 students. Switch between tabs to explore ROC curves, confusion
+    of 1,000 students. Switch between tabs to explore ROC curves, confusion
     matrices, feature importance, and cross-validation everything needed
     to defend the model selection at the viva.
   </p>
   <div class="context-badges">
     <div class="context-badge">🧪 3 models compared</div>
-    <div class="context-badge">🧑‍🎓 2,000-student test set</div>
+    <div class="context-badge">🧑‍🎓 1,000-student test set</div>
     <div class="context-badge">🔁 5-fold cross-validated</div>
   </div>
 </div>
@@ -436,7 +436,7 @@ with tab_overview:
                 f"<div class='domain-card-title' style='color:{BLUE1};'>"
                 f"Full Metrics Comparison — Test Set</div></div>"
                 f"<p class='section-sub'>All metrics evaluated on the held-out test set "
-                f"of 2,000 students that the models never saw during training. Green "
+                f"of 1,000 students that the models never saw during training. Green "
                 f"cells mark the best score per metric.</p>",
                 unsafe_allow_html=True)
 
@@ -748,7 +748,7 @@ with tab_feat:
                 f"Global Feature Importance — SHAP</div></div>"
                 f"<p class='section-sub'>Mean absolute SHAP value per feature — the "
                 f"average magnitude of each feature's contribution to the dropout "
-                f"prediction across all 2,000 test students. Unlike Gini importance, "
+                f"prediction across all 1,000 test students. Unlike Gini importance, "
                 f"SHAP values are model-agnostic and direction-aware.</p>",
                 unsafe_allow_html=True)
 
@@ -895,8 +895,8 @@ with tab_cv:
                 "<div class='cv-note'>"
                 "⚠️ <strong>Important:</strong> All CV results are computed on the "
                 "SMOTE-balanced training set (11,200 records). The held-out test set "
-                "(2,000 records, unbalanced, 30% dropout) was never seen during "
-                "training or cross-validation — ensuring the reported test metrics "
+                "(1,000 records, unbalanced, 30% dropout) was never seen during "
+                "training, cross-validation or early stopping — ensuring the reported test metrics "
                 "reflect genuine out-of-sample generalisation."
                 "</div>",
                 unsafe_allow_html=True)

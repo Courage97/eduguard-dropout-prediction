@@ -72,9 +72,9 @@ Nigerian school intervention taxonomy.
 
 | Model | Accuracy | Recall | F1-Score | AUC-ROC |
 |---|---|---|---|---|
-| Logistic Regression | 0.9325 | 0.9117 | 0.8902 | 0.9892 |
-| Random Forest | 0.9195 | 0.8683 | 0.8662 | 0.9911 |
-| **XGBoost (selected)** | **0.9315** | **0.8967** | **0.8871** | **0.9944** |
+| Logistic Regression | 0.9370 | 0.9167 | 0.8972 | 0.9811 |
+| Random Forest | 0.9240 | 0.8700 | 0.8729 | 0.9804 |
+| **XGBoost (selected)** | **0.9380** | **0.9067** | **0.8977** | **0.9858** |
 
 **XGBoost was selected** as the production model for its superior
 AUC-ROC, lowest false positive count, and native SHAP TreeExplainer
@@ -129,6 +129,8 @@ eduguard-dropout-prediction/
 ├── encoding_maps.pkl
 ├── scaler.pkl
 ├── continuous_cols.pkl
+├── X_val.csv
+├── y_val.csv
 ├── X_test.csv
 └── y_test.csv
 
